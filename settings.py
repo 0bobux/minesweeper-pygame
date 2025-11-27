@@ -24,16 +24,16 @@ YELLOW = (255, 255, 0)
 BGCOLOUR = DARKGREY
 
 # game settings
-TILESIZE = 32
+TILESIZE = 32 # пикселей на тайл
 ROWS = 15
-COLS = 15
-AMOUNT_MINES = 30
+COLS = 15 # размеры поля
+AMOUNT_MINES = 30 # число мин
 WIDTH = TILESIZE * ROWS
-HEIGHT = TILESIZE * COLS
+HEIGHT = TILESIZE * COLS # размеры окна
 FPS = 60
 TITLE = "Minesweeper Clone"
 
-tile_numbers = []
+tile_numbers = [] # список изображений с цифрами
 for i in range(1, 9):
     tile_numbers.append(pygame.transform.scale(pygame.image.load(os.path.join("assets", f"Tile{i}.png")), (TILESIZE, TILESIZE)))
 
