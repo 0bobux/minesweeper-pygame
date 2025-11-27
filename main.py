@@ -87,27 +87,31 @@ class Game:
                 pygame.quit()
                 quit(0)
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mx, my = pygame.mouse.get_pos()
+            if event.type == pygame.MOUSEBUTTONDOWN: # событие нажатия кнопки мыши
+                mx, my = pygame.mouse.get_pos() # возвращает координаты мыши в пикселях
                 mx //= TILESIZE
-                my //= TILESIZE
+                my //= TILESIZE # получаем индексы клетки на поле
 
                 if event.button == 1:
                     if not self.board.board_list[mx][my].flagged:
-                        # dig and check if exploded
-                        if not self.board.dig(mx, my):
-                            # explode
+                        # функция открытия клетки, срабатывает при взрыве
+                        if not self.board.dig(mx, my): # ==True
+                            # обработка взрыва
                             for row in self.board.board_list:
                                 for tile in row:
+                                    # флажок не на мине
                                     if tile.flagged and tile.type != "X":
                                         tile.flagged = False
                                         tile.revealed = True
                                         tile.image = tile_not_mine
+                                    # настоящие мины раскрываются
                                     elif tile.type == "X":
                                         tile.revealed = True
+                            # завершаем игру
                             self.playing = False
 
                 if event.button == 3:
+                    # переключает флаг, но только если тайл ещё не раскрыт
                     if not self.board.board_list[mx][my].revealed:
                         self.board.board_list[mx][my].flagged = not self.board.board_list[mx][my].flagged
 
@@ -116,8 +120,8 @@ class Game:
                     self.playing = False
                     for row in self.board.board_list:
                         for tile in row:
-                            if not tile.revealed:
-                                tile.flagged = True
+                            if not tile.revealed: # для всех нераскрытых ячеек
+                                tile.flagged = True # показывает, что все оставшиеся — мины
 
     def end_screen(self):
         """
