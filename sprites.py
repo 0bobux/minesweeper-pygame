@@ -30,11 +30,11 @@ class Tile:
             revealed (bool): открыта ли клетка.
             flagged (bool): помечена ли флажком.
         """
-        self.x, self.y = x * TILESIZE, y * TILESIZE
-        self.image = image
-        self.type = type
-        self.revealed = revealed
-        self.flagged = flagged
+        self.x, self.y = x * TILESIZE, y * TILESIZE # позиция в пикселях
+        self.image = image # текущее изображение
+        self.type = type # логическое значение тайла
+        self.revealed = revealed # раскрыт ли тайл
+        self.flagged = flagged # поставлен ли флаг
 
     def draw(self, board_surface):
         """
@@ -82,11 +82,11 @@ class Board:
             board_list (list[list[Tile]]): матрица клеток.
             dug (list[tuple]): список уже открытых клеток (для защиты от бесконечной рекурсии).
         """
-        self.board_surface = pygame.Surface((WIDTH, HEIGHT))
-        self.board_list = [[Tile(col, row, tile_empty, ".") for row in range(ROWS)] for col in range(COLS)]
+        self.board_surface = pygame.Surface((WIDTH, HEIGHT)) # вспомогательная поверхность, на ней рисуются все тайлы
+        self.board_list = [[Tile(col, row, tile_empty, ".") for row in range(ROWS)] for col in range(COLS)] # двоичный список: внешний цикл по колонкам, внутренний — по строкам
         self.place_mines()
-        self.place_clues()
-        self.dug = []
+        self.place_clues() # для заполнения поля
+        self.dug = [] # список уже «вскрытых» координат
 
     def place_mines(self):
         """
@@ -165,12 +165,12 @@ class Board:
         Args:
             screen (pygame.Surface): главное окно игры.
         """
-        self.board_surface.fill(DARKGREY)
+        self.board_surface.fill(DARKGREY) # Очищает board_surface фоном
 
         for row in self.board_list:
             for tile in row:
                 tile.draw(self.board_surface)
-        screen.blit(self.board_surface, (0, 0))
+        screen.blit(self.board_surface, (0, 0)) # Копирует финальную поверхность на экран.
 
     def dig(self, x, y):
         """
@@ -185,17 +185,19 @@ class Board:
                 True — если всё нормально.
                 False — если игрок попал на мину (проигрыш).
         """
-        self.dug.append((x, y))
-        if self.board_list[x][y].type == "X":
+        self.dug.append((x, y)) # отмечает, что клетка вскрыта
+        if self.board_list[x][y].type == "X": # Если это мина
             self.board_list[x][y].revealed = True
             self.board_list[x][y].image = tile_exploded
-            return False
-        elif self.board_list[x][y].type == "C":
+            return False # произошёл взрыв
+        elif self.board_list[x][y].type == "C": # Если это подсказка
             self.board_list[x][y].revealed = True
             return True
 
-        self.board_list[x][y].revealed = True
+        self.board_list[x][y].revealed = True # пустая клетка
 
+        # рекурсивно вызывает dig для всех соседних клеток в квадрате 3×3
+        # при клике по пустому месту раскрываются все прилегающие пустые клетки и подсказки
         for nx in range(max(0, x-1), min(COLS-1, x+1) + 1):
             for ny in range(max(0, y-1), min(ROWS-1, y+1) + 1):
                 if (nx, ny) not in self.dug:
