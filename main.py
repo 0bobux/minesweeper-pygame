@@ -97,16 +97,28 @@ class Game:
                         # функция открытия клетки, срабатывает при взрыве
                         if not self.board.dig(mx, my): # ==True
                             # обработка взрыва
+                            # mx, my — координаты клетки, на которой взорвалась мина
                             for row in self.board.board_list:
                                 for tile in row:
-                                    # флажок не на мине
-                                    if tile.flagged and tile.type != "X":
+                                    if tile.type == "X":
+                                        if tile.flagged:
+                                            # правильно отмеченная мина — оставляем флаг
+                                            continue
+                                        elif tile == self.board.board_list[mx][my]:
+                                            # мина, на которой взорвался клик
+                                            tile.revealed = True
+                                            tile.flagged = False
+                                            tile.image = tile_exploded
+                                        else:
+                                            # остальные мины без флага
+                                            tile.revealed = True
+                                            tile.flagged = False
+                                            tile.image = tile_mine
+                                    elif tile.flagged:
+                                        # неправильные флаги
+                                        tile.revealed = True
                                         tile.flagged = False
-                                        tile.revealed = True
                                         tile.image = tile_not_mine
-                                    # настоящие мины раскрываются
-                                    elif tile.type == "X":
-                                        tile.revealed = True
                             # завершаем игру
                             self.playing = False
 
